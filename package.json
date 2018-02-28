@@ -1,13 +1,13 @@
 {
-  "name": "jszip_test",
-  "version": "1.0.0",
-  "description": "",
+  "name": "zip-process",
+  "version": "0.1.0",
+  "description": "Tiny module for easy modify & repack files in zip archives and zip-containers",
   "main": "dist/zip-process.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx babel src/zip-process.js --out-file dist/zip-process.js --presets=env"
   },
-  "author": "",
+  "author": "Alex (mclander) Maximenko",
   "license": "ISC",
   "dependencies": {
     "is-node": "^1.0.2",

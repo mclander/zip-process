@@ -24,13 +24,18 @@ const zp = require('zip-process');
 
 zp.process('jonh.xlsx',            // file to process
 	{	// Here the options
-		output : './fedor.xlsx', // file to output
-		saveNonChanged: true	 // we always need to rewrite output, not only on changes
+		//   file to output
+		output : './fedor.xlsx',
+		//   we always need to rewrite output, not only on changes
+		saveNonChanged: true	 
 	}, 
 	{	// Here the processors
-		string: { // We must split binary && text processing, for binary use key binary
+		// We must split binary && text processing, for binary use key binary
+		string: { 
+			
 			// aplly path filter we need to check all .xml && .xml.rels files
 			filter: (relativePath) =>  !!/\.xml(\.rels)?$/.test(relativePath),
+			
 			// just change it, and return new value
 			callback: (data, zipFileName) =>  data && data.replace(/\bJohn\b/g, 'Fedor')
 		}
@@ -87,7 +92,7 @@ Warning! I dont know how national encoded files will works. I prefer to use UTF8
 
 #### Section structure
 
-*filter* key: `function(relativePath, fileInfo)`
+##### *filter* key: `function(relativePath, fileInfo)`
 
 This function allow process only files within zip that you want. Realized directly by [JSZip.filter](https://stuk.github.io/jszip/documentation/api_jszip/filter.html).
 
@@ -97,7 +102,7 @@ If ommited: for section keys:
 * binary - all files which not string
 * any other key - all files in archive
 
-*callback* key: `function(content, relativePath)`
+##### *callback* key: `function(content, relativePath)`
 
 This call back must return changed or unchanged content, undefined or signature for remove this file from archive. 
 * If content changed, target file will be repacked with new content. 
@@ -106,7 +111,7 @@ This call back must return changed or unchanged content, undefined or signature 
 
 If ommited, nothing changed.
 
-*options* key : `{removeSignature: ...}`
+##### *options* key : `{removeSignature: ...}`
 
 Can override option removeSignature.
 
