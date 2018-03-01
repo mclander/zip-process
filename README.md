@@ -1,4 +1,4 @@
-# process-zip
+# zip-process
 
 Tiny module for easy modify & repack files in zip archives and zip-containers like Excel files.
 Based on [JSZip](https://stuk.github.io/jszip/).
@@ -10,7 +10,7 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```sh
-$ npm install process-zip
+$ npm install zip-process
 ```
 
 ## API
@@ -18,6 +18,7 @@ $ npm install process-zip
 Imagine we have .xlsx file (zip container) there we want change all occurences 'John' to 'Fedor'. 
 !Don't do that if not sure for avoid side-effects.
 
+Node.js
 ```js
 
 const zp = require('zip-process');
@@ -43,49 +44,8 @@ zp.process('jonh.xlsx',            // file to process
 );
 ```
 
-As your might guess, I wrote this module special for work with Excel files, but other types of zip works fine too ;)
-
-## function `process(file_or_content, options, callbacks)`
-
-Process zip file or zip content. 
-
-### file_or_content parameter
-
-File name or if content (readed in memory by any way).
-
-### options parameter
-
-Awailable options:
-*	output : output file name (only for process & processFile functions, no default)
-*	saveNonChanges: (default false)
-*	removeSignature: Remove file if callback return exactly signature (default null)
-*	handleError: callback wich called on fileread error (only for process & processFile functions, no default)
-*	compression: compress file 'DEFLATE' or not 'STORE' (default 'DEFLATE') as options.compession in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html)
-*	extendOptions : all other options for options in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html) (default {})
-*	type: (default: for Node application 'nodebuffer', for browser 'blob' ) as options.type in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html)
-
-### callbacks parameter
-
-Hash of {string, binary} with same structure {filter, callback, options}:
-
-Node
-```
-{
-	string: {
-		filter: function(relativePath, fileInfo){ ... },
-		callback: function(content, relativePath){ ...},
-		options: {...}
-	},
-	binary: {
-		filter: ...
-		callback: ...
-		options: ...
-	},
-}
-```
-
 AngularJS
-```
+``` js
   $http.get('/store/john.xlsx', {
       transformResponse : (data) => ({data}),
       responseType : 'arraybuffer'
@@ -112,9 +72,53 @@ AngularJS
 
 ```
 
-#### Section keys: `{string}` vs `{binary}`
 
-String section used for work with text files. This mean that this files will be decoded by [zipObject.async('string')](https://stuk.github.io/jszip/documentation/api_zipobject/async.html. So binary files will be decoded by [zipObject.async('unit8array')](https://stuk.github.io/jszip/documentation/api_zipobject/async.html). Hint! you can use any other key for section, it will be translated to [zipObject.async(<my section key>)](https://stuk.github.io/jszip/documentation/api_zipobject/async.html). Available types you can see in [JSZip documentation](https://stuk.github.io/jszip/documentation/api_zipobject/async.html).
+As your might guess, I wrote this module special for work with Excel files, but other types of zip works fine too ;)
+
+## function `process(file_or_content, options, callbacks)`
+
+Process zip file or zip content. 
+
+### file_or_content parameter
+
+File name or if content (readed in memory by any way).
+
+### options parameter
+
+Awailable options:
+*	output : output file name (only for process & processFile functions, no default)
+*	saveNonChanges: (default false)
+*	removeSignature: Remove file if callback return exactly signature (default null)
+*	handleError: callback wich called on fileread error (only for process & processFile functions, no default)
+*	compression: compress file 'DEFLATE' or not 'STORE' (default 'DEFLATE') as options.compession in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html)
+*	extendOptions : all other options for options in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html) (default {})
+*	type: (default: for Node application 'nodebuffer', for browser 'blob' ) as options.type in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html)
+
+### callbacks parameter
+
+Hash of {string, binary} with same structure {filter, callback, options}:
+
+``` js
+{
+	string: {
+		filter: function(relativePath, fileInfo){ ... },
+		callback: function(content, relativePath){ ...},
+		options: {...}
+	},
+	binary: {
+		filter: ...
+		callback: ...
+		options: ...
+	},
+}
+```
+
+
+#### Section keys: `{string}` ,  `{binary}` and others
+
+String section used for work with text files. This mean that this files will be decoded 
+by [zipObject.async('string')](https://stuk.github.io/jszip/documentation/api_zipobject/async.html). So binary 
+files will be decoded by [zipObject.async('unit8array')](https://stuk.github.io/jszip/documentation/api_zipobject/async.html). Hint! you can use any other key for section, it will be translated to [zipObject.async(<my section key>)](https://stuk.github.io/jszip/documentation/api_zipobject/async.html). Available types you can see in [JSZip documentation](https://stuk.github.io/jszip/documentation/api_zipobject/async.html).
 
 Warning! I dont know how national encoded files will works. I prefer to use UTF8 any way. 
 
