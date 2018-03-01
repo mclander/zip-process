@@ -68,6 +68,7 @@ Awailable options:
 
 Hash of {string, binary} with same structure {filter, callback, options}:
 
+Node
 ```
 {
 	string: {
@@ -83,6 +84,33 @@ Hash of {string, binary} with same structure {filter, callback, options}:
 }
 ```
 
+AngularJS
+```
+  $http.get('/store/john.xlsx', {
+      transformResponse : (data) => ({data}),
+      responseType : 'arraybuffer'
+  }).then(res => {
+      const fileName = 'fedor.xlsx'; 
+
+      processContent(res.data.data, {}, {string: {
+          filter: (relativePath) =>  !!/\.xml(\.rels)?$/.test(relativePath),
+          callback: (data, zipFileName) =>  data && data.replace(/\bJohn\b/g, 'Fedor')
+      }}).then((result) => {
+
+          FileSaver.saveAs(
+              result 
+              || new Blob(
+                  [res.data.data], 
+                  { type   : res.headers('content-type')}
+              ),
+              fileName,
+              true
+          );
+
+      });
+  });
+
+```
 
 #### Section keys: `{string}` vs `{binary}`
 
@@ -98,7 +126,7 @@ This function allow process only files within zip that you want. Realized direct
 
 
 If ommited: for section keys:
-* string - files with extension where defined mime-charset ([mime.lookup(mime.charset(fileName))](https://www.npmjs.com/package/mime-types)) or xml or xml based extensions
+* string - files with extension where defined mime-charset ( [mime.lookup(mime.charset(fileName))](https://www.npmjs.com/package/mime-types) ) or xml or xml based extensions
 * binary - all files which not string
 * any other key - all files in archive
 
