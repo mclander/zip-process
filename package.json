@@ -1,6 +1,6 @@
 {
   "name": "zip-process",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tiny module for easy modify & repack files in zip archives and zip-containers",
   "main": "dist/zip-process.js",
   "scripts": {
