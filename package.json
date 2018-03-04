@@ -1,6 +1,6 @@
 {
   "name": "zip-process",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tiny module for easy modify & repack files in zip archives and zip-containers",
   "homepage": "https://github.com/mclander/zip-process#readme",
   "keywords": [
@@ -13,7 +13,6 @@
     "type": "git",
     "url": "git+https://github.com/mclander/zip-process.git"
   },
-
   "main": "dist/zip-process.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,6 +21,7 @@
   "author": "Alex (mclander) Maximenko",
   "license": "ISC",
   "dependencies": {
+    "babel-preset-env": "^1.6.1",
     "is-node": "^1.0.2",
     "jszip": "^3.1.5",
     "mime-types": "^2.1.18"
