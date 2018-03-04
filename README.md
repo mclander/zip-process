@@ -15,23 +15,21 @@ $ npm install zip-process
 
 ## API
 
-Imagine we have .xlsx file (zip container) there we want change all occurences 'John' to 'Fedor'. 
+Imagine that we have .xlsx file (zip container). And need to change all occurences 'John' to 'Fedor'. 
 !Don't do that if not sure for avoid side-effects.
 
 Node.js
 ```js
 
-const zp = require('zip-process');
+const zipProcess = require('zip-process');
+const fs = require(fs);
 
-zp.process('jonh.xlsx',            // file to process
-	{	// Here the options
-		//   file to output
-		output : './fedor.xlsx',
-		//   we always need to rewrite output, not only on changes
-		saveNonChanged: true	 
-	}, 
-	{	// Here the processors
-		// We must split binary && text processing, for binary use key binary
+// zipProcess options
+const options = {}; // All default
+
+// zipProcess calbacks (processors)
+const callbacks = {	
+		// We split binary && text processing, for binary use key 'binary', for text files 'string'
 		string: { 
 			
 			// aplly path filter we need to check all .xml && .xml.rels files
@@ -41,68 +39,81 @@ zp.process('jonh.xlsx',            // file to process
 			callback: (data, zipFileName) =>  data && data.replace(/\bJohn\b/g, 'Fedor')
 		}
 	}
-);
+
+
+fs.readFile('./john.xlsx', function(err, source) {
+
+    if (err) { throw err; }
+
+    zipProcess(source, options, callbacks).then( out => {
+
+	    const changed = source !== out;
+
+        if (changed) {
+                 fs.writeFileSync('./fedor.xlsx', out);
+        }
+
+    }) ; // enf of zipProcess
+
+}); // end of fs.readFile
+
 ```
 
-AngularJS
+VanillaJS with [FileSaver](https://github.com/eligrey/FileSaver.js/)
 ``` js
-  $http.get('/store/john.xlsx', {
-      transformResponse : (data) => ({data}),
-      responseType : 'arraybuffer'
-  }).then(res => {
-      const fileName = 'fedor.xlsx'; 
 
-      processContent(res.data.data, {}, {string: {
-          filter: (relativePath) =>  !!/\.xml(\.rels)?$/.test(relativePath),
-          callback: (data, zipFileName) =>  data && data.replace(/\bJohn\b/g, 'Fedor')
-      }}).then((result) => {
+var xhr = new XMLHTTPRequest();
+xhr.open("GET", './john.xlsx', true);
+xhr.responseType = 'arraybuffer';
+xhr.addEventListener('load',function(){
+    if (xhr.status === 200){
+	  	zipProcess(xhr.response, {}, {
+		string: {
+			filter: relativePath =>  !!/\.xml(\.rels)?$/.test(relativePath),
+			callback: data =>  data && data.replace(/\bJohn\b/g, 'Fedor')
+		}
+	}).then((result) => {
 
-          FileSaver.saveAs(
-              result 
-              || new Blob(
-                  [res.data.data], 
-                  { type   : res.headers('content-type')}
-              ),
-              fileName,
-              true
-          );
+		FileSaver.saveAs(
+			result 
+			'fedor.xlsx',
+			true
+		);
 
-      });
-  });
-
+	});
+  }
+})
+xhr.send();
 ```
-
 
 As your might guess, I wrote this module special for work with Excel files, but other types of zip works fine too ;)
 
-## function `process(file_or_content, options, callbacks)`
 
-Process zip file or zip content. 
+## function `zipProcess(content, options, callbacks)`
 
-### file_or_content parameter
+Process zip file or zip content as binary and returns promise. Where promise parameter is new packed content. 
+
+### content parameter
 
 File name or if content (readed in memory by any way).
 
 ### options parameter
 
 Awailable options:
-*	output : output file name (only for process & processFile functions, no default)
-*	saveNonChanges: (default false)
-*	removeSignature: Remove file if callback return exactly signature (default null)
-*	handleError: callback wich called on fileread error (only for process & processFile functions, no default)
+*   removeSignature: Remove file if callback return exactly signature (default null)
 *	compression: compress file 'DEFLATE' or not 'STORE' (default 'DEFLATE') as options.compession in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html)
 *	extendOptions : all other options for options in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html) (default {})
 *	type: (default: for Node application 'nodebuffer', for browser 'blob' ) as options.type in [JSZip.generateAsync](https://stuk.github.io/jszip/documentation/api_jszip/generate_async.html)
 
 ### callbacks parameter
 
-Hash of {string, binary} with same structure {filter, callback, options}:
+Hash of {string, binary, ...} with same structure {filter, callback, options}:
 
 ``` js
 {
 	string: {
 		filter: function(relativePath, fileInfo){ ... },
-		callback: function(content, relativePath){ ...},
+		callback: function(fileContent, relativePath, zipObject){ ...},
 		options: {...}
 	},
 	binary: {
@@ -114,7 +125,7 @@ Hash of {string, binary} with same structure {filter, callback, options}:
 ```
 
 
-#### Section keys: `{string}` ,  `{binary}` and others
+#### Section keys: `{string}`, `{binary}` and others
 
 String section used for work with text files. This mean that this files will be decoded 
 by [zipObject.async('string')](https://stuk.github.io/jszip/documentation/api_zipobject/async.html). So binary 
@@ -124,17 +135,17 @@ Warning! I dont know how national encoded files will works. I prefer to use UTF8
 
 #### Section structure
 
-##### *filter* key: `function(relativePath, fileInfo)`
+##### `filter: function(relativePath, fileInfo)`
 
 This function allow process only files within zip that you want. Realized directly by [JSZip.filter](https://stuk.github.io/jszip/documentation/api_jszip/filter.html).
 
 
-If ommited: for section keys:
+If ommited, for section keys:
 * string - files with extension where defined mime-charset ( [mime.lookup(mime.charset(fileName))](https://www.npmjs.com/package/mime-types) ) or xml or xml based extensions
 * binary - all files which not string
 * any other key - all files in archive
 
-##### *callback* key: `function(content, relativePath)`
+##### `callback: function(fileContent, relativePath, zipObject)`
 
 This call back must return changed or unchanged content, undefined or signature for remove this file from archive. 
 * If content changed, target file will be repacked with new content. 
@@ -143,17 +154,14 @@ This call back must return changed or unchanged content, undefined or signature 
 
 If ommited, nothing changed.
 
-##### *options* key : `{removeSignature: ...}`
+##### `options: {removeSignature: ...}`
 
 Can override option removeSignature.
 
-## function `processFile(file, options, callbacks)`
+# webpack 1.x troubles
 
-Works exactly like `process` function that received file name in first parameter: process zip archive file, and save result if nessesary.
-
-## function `processContent(zipContent, options, callbacks)`
-
-Received `zipContent` as binary and returns promise, where promise parameter is new packed content. Example will be added soon.
+I use `mime-types`, which use `mime-db`, which includes json file directly to code. So If you have not
+configure `json-loader` yet, just do it. 
 
 # Author
 
