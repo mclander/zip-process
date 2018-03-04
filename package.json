@@ -1,7 +1,19 @@
 {
   "name": "zip-process",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Tiny module for easy modify & repack files in zip archives and zip-containers",
+  "homepage": "https://github.com/mclander/zip-process#readme",
+  "keywords": [
+    "zip",
+    "modify",
+    "process",
+    "content"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mclander/zip-process.git"
+  },
+
   "main": "dist/zip-process.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
