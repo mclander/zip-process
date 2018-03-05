@@ -1,6 +1,6 @@
 {
   "name": "zip-process",
-  "version": "0.2.1",
+  "version": "0.2.5",
   "description": "Tiny module for easy modify & repack files in zip archives and zip-containers",
   "homepage": "https://github.com/mclander/zip-process#readme",
   "keywords": [
