@@ -65,21 +65,22 @@ var xhr = new XMLHTTPRequest();
 xhr.open("GET", './john.xlsx', true);
 xhr.responseType = 'arraybuffer';
 xhr.addEventListener('load',function(){
-if (xhr.status === 200){
-  zipProcess(xhr.response, {}, {
-    string: {
-      filter: relativePath =>  !!/\.xml(\.rels)?$/.test(relativePath),
-      callback: data =>  data && data.replace(/\bJohn\b/g, 'Fedor')
-    }
-  }).then((result) => {
+  if (xhr.status === 200){
 
-   FileSaver.saveAs(
-    result 
-    'fedor.xlsx',
-    true
-   );
+    zipProcess(xhr.response, {}, {
+      string: {
+        filter: relativePath =>  !!/\.xml(\.rels)?$/.test(relativePath),
+        callback: data =>  data && data.replace(/\bJohn\b/g, 'Fedor')
+      }
+    }).then((result) => {
 
-});
+      FileSaver.saveAs(
+        result 
+        'fedor.xlsx',
+        true
+       );
+
+    });
   }
 })
 xhr.send();
@@ -98,7 +99,7 @@ Zip file content (readed as binary).
 
 ### options parameter
 
-If ommited, blank or undefined default options used.
+If ommited, blank or undefined, defaults options will be used.
 
 Awailable options:
 * removeSignature: Remove file if callback return exactly signature (default null)
