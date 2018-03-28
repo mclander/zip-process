@@ -111,14 +111,13 @@ function process(content, process_options, callbacks) {
 
             const _process_options = process_options || {};
 
-            return zip.generateAsync(
-                Object.assign({
+            return zip.generateAsync({
+                    ... {
                         type: _process_options.type || defaultOptions.type,
                         compression: _process_options.compression || defaultOptions.compression,
                     },
-                    _process_options.extendOptions || defaultOptions.extendOptions
-                )
-            ); // end of zip.generateAsync
+                    ... (_process_options.extendOptions || defaultOptions.extendOptions)
+            }); // end of zip.generateAsync
 
         }); // end of Promise.all
 

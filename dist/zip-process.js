@@ -3,6 +3,8 @@
 
 "use strict";
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var JSZip = require("jszip");
 var mime = require('mime-types');
 var isNode = require('is-node');
@@ -124,7 +126,7 @@ function process(content, process_options, callbacks) {
 
             var _process_options = process_options || {};
 
-            return zip.generateAsync(Object.assign({
+            return zip.generateAsync(_extends({
                 type: _process_options.type || defaultOptions.type,
                 compression: _process_options.compression || defaultOptions.compression
             }, _process_options.extendOptions || defaultOptions.extendOptions)); // end of zip.generateAsync
@@ -133,4 +135,3 @@ function process(content, process_options, callbacks) {
 }
 
 module.exports = process;
-                         
