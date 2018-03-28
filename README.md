@@ -164,6 +164,10 @@ Can override option removeSignature.
 I use `mime-types`, which use `mime-db`, which includes json file directly to code. So If you have not
 configure `json-loader` yet, just do it. 
 
+# History
+0.2.6 - fix for IE support
+0.2.5 and above - fog of development
+
 # Author
 
 Alexander (mclander) Maksimenko , Sbertech, Moscow, Russia. 
